@@ -52,6 +52,7 @@
             modules = [
               {
                 packages = [
+                  pkgs2.chromedriver
                   pkgs.git
                   pkgs2.vscode.fhs
                 ];
