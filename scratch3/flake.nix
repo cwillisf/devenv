@@ -45,6 +45,7 @@
         let
           pkgs = import nixpkgs { inherit config; };
           pkgs2 = import nixpkgs-unstable { inherit config; };
+          playwright-browsers = pkgs2.playwright-driver.browsers;
         in
         {
           default = devenv.lib.mkShell {
@@ -53,13 +54,26 @@
               {
                 packages = [
                   pkgs.bashInteractive
+                  pkgs2.chromedriver
                   pkgs.git
+                  playwright-browsers
                   pkgs2.vscode.fhs
                 ];
 
+                enterShell=''
+                  export PLAYWRIGHT_BROWSERS_PATH="${playwright-browsers}"
+                  export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+                '';
+
                 languages = {
+                  javascript = {
+                    enable = true;
+                    npm.enable = true;
+                  };
                   nix.enable = true;
+                  python.enable = true;
                   shell.enable = true;
+                  typescript.enable = true;
                 };
 
                 pre-commit.hooks = {
