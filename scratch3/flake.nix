@@ -60,7 +60,7 @@
                   pkgs2.vscode.fhs
                 ];
 
-                enterShell=''
+                enterShell = ''
                   export PLAYWRIGHT_BROWSERS_PATH="${playwright-browsers}"
                   export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
                 '';
@@ -70,7 +70,6 @@
                     enable = true;
                     npm.enable = true;
                   };
-                  nix.enable = true;
                   python.enable = true;
                   shell.enable = true;
                   typescript.enable = true;
@@ -84,16 +83,10 @@
                   check-toml.enable = true;
                   check-yaml.enable = true;
                   editorconfig-checker.enable = true;
-                  nil.enable = true;
                   ripsecrets.enable = true;
-                  statix.enable = true;
                   treefmt = {
                     #enable = true; # figure out a better way to handle treefmt.toml
-                    settings.formatters = [
-                      pkgs2.deadnix
-                      pkgs2.nixfmt-rfc-style
-                      pkgs2.taplo
-                    ];
+                    settings.formatters = [ pkgs2.taplo ];
                   };
                   trufflehog.enable = true;
                 };

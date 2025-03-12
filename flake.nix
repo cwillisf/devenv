@@ -74,7 +74,7 @@
                   ripsecrets.enable = true;
                   statix.enable = true;
                   treefmt = {
-                    #enable = true; # figure out a better way to handle treefmt.toml
+                    enable = true;
                     settings.formatters = [
                       pkgs2.deadnix
                       pkgs2.nixfmt-rfc-style
