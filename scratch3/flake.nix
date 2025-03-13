@@ -28,7 +28,7 @@
       };
       forEachSystem = nixpkgs.lib.genAttrs (import systems);
     in
-    {
+    rec {
       checks = forEachSystem (system: {
         pre-commit-check = inputs.pre-commit-hooks.lib.${system}.run { src = ./.; };
       });
@@ -41,58 +41,65 @@
       });
 
       devShells = forEachSystem (
-        _system:
+        system:
         let
           pkgs = import nixpkgs { inherit config; };
           pkgs2 = import nixpkgs-unstable { inherit config; };
           playwright-browsers = pkgs2.playwright-driver.browsers;
         in
-        {
-          default = devenv.lib.mkShell {
-            inherit inputs pkgs;
-            modules = [
-              {
-                packages = [
-                  pkgs.bashInteractive
-                  pkgs2.chromedriver
-                  pkgs.git
-                  playwright-browsers
-                  pkgs2.vscode.fhs
-                ];
+        rec {
+          default =
+            let
+              pre-commit-install-devenv-hooks = (
+                pkgs.writeScriptBin "pre-commit-install-devenv-hooks" default.config.pre-commit.installationScript
+              );
+            in
+            devenv.lib.mkShell {
+              inherit inputs pkgs;
+              modules = [
+                {
+                  packages = [
+                    pre-commit-install-devenv-hooks
+                    pkgs.bashInteractive
+                    pkgs2.chromedriver
+                    pkgs.git
+                    playwright-browsers
+                    pkgs2.vscode.fhs
+                  ];
 
-                enterShell = ''
-                  export PLAYWRIGHT_BROWSERS_PATH="${playwright-browsers}"
-                  export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
-                '';
+                  enterShell = ''
+                    export PLAYWRIGHT_BROWSERS_PATH="${playwright-browsers}"
+                    export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+                  '';
 
-                languages = {
-                  javascript = {
-                    enable = true;
-                    npm.enable = true;
+                  languages = {
+                    javascript = {
+                      enable = true;
+                      npm.enable = true;
+                    };
+                    python.enable = true;
+                    shell.enable = true;
+                    typescript.enable = true;
                   };
-                  python.enable = true;
-                  shell.enable = true;
-                  typescript.enable = true;
-                };
 
-                pre-commit.hooks = {
-                  check-added-large-files.enable = true;
-                  check-case-conflicts.enable = true;
-                  check-merge-conflicts.enable = true;
-                  check-symlinks.enable = true;
-                  check-toml.enable = true;
-                  check-yaml.enable = true;
-                  editorconfig-checker.enable = true;
-                  ripsecrets.enable = true;
-                  treefmt = {
-                    #enable = true; # figure out a better way to handle treefmt.toml
-                    settings.formatters = [ pkgs2.taplo ];
+                  pre-commit.hooks = {
+                    check-added-large-files.enable = true;
+                    check-case-conflicts.enable = true;
+                    check-merge-conflicts.enable = true;
+                    check-symlinks.enable = true;
+                    check-toml.enable = true;
+                    check-yaml.enable = true;
+                    editorconfig-checker.enable = true;
+                    ripsecrets.enable = true;
+                    treefmt = {
+                      #enable = true; # figure out a better way to handle treefmt.toml
+                      settings.formatters = [ pkgs2.taplo ];
+                    };
+                    trufflehog.enable = true;
                   };
-                  trufflehog.enable = true;
-                };
-              }
-            ];
-          };
+                }
+              ];
+            };
         }
       );
     };
