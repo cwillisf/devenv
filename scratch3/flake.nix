@@ -41,7 +41,7 @@
       });
 
       devShells = forEachSystem (
-        system:
+        _system:
         let
           pkgs = import nixpkgs { inherit config; };
           pkgs2 = import nixpkgs-unstable { inherit config; };
@@ -50,9 +50,7 @@
         rec {
           default =
             let
-              pre-commit-install-devenv-hooks = (
-                pkgs.writeScriptBin "pre-commit-install-devenv-hooks" default.config.pre-commit.installationScript
-              );
+              pre-commit-install-devenv-hooks = pkgs.writeScriptBin "pre-commit-install-devenv-hooks" default.config.pre-commit.installationScript;
             in
             devenv.lib.mkShell {
               inherit inputs pkgs;
@@ -87,14 +85,9 @@
                     check-case-conflicts.enable = true;
                     check-merge-conflicts.enable = true;
                     check-symlinks.enable = true;
-                    check-toml.enable = true;
                     check-yaml.enable = true;
                     editorconfig-checker.enable = true;
                     ripsecrets.enable = true;
-                    treefmt = {
-                      #enable = true; # figure out a better way to handle treefmt.toml
-                      settings.formatters = [ pkgs2.taplo ];
-                    };
                     trufflehog.enable = true;
                   };
                 }
