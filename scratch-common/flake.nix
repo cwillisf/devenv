@@ -81,7 +81,6 @@
                     check-merge-conflicts.enable = true;
                     check-symlinks.enable = true;
                     check-yaml.enable = true;
-                    eclint.enable = true;
                     editorconfig-checker.enable = true;
                     markdownlint = {
                       enable = true;
