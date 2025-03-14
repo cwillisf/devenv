@@ -1,15 +1,15 @@
 { pkgs, ... }:
 let
-  inherit (pkgs.unstable) playwright-browsers;
+  inherit (pkgs.unstable) playwright;
 in
 {
   packages = [
     pkgs.unstable.chromedriver
-    playwright-browsers
+    playwright.browsers
   ];
 
   enterShell = ''
-    export PLAYWRIGHT_BROWSERS_PATH="${playwright-browsers}"
+    export PLAYWRIGHT_BROWSERS_PATH="${playwright.browsers}"
     export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
   '';
 
