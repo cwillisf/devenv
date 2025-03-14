@@ -30,7 +30,7 @@
       };
       forEachSystem = nixpkgs.lib.genAttrs (import systems);
     in
-    rec {
+    {
       checks = forEachSystem (system: {
         pre-commit-check = inputs.pre-commit-hooks.lib.${system}.run { src = ./.; };
       });
@@ -46,66 +46,22 @@
         _system:
         let
           pkgs = import nixpkgs { inherit config; };
-          pkgs2 = import nixpkgs-unstable { inherit config; };
+          pkgs-unstable = import nixpkgs-unstable { inherit config; };
         in
-        rec {
-          default =
-            let
-              pre-commit-install-devenv-hooks = pkgs.writeScriptBin "pre-commit-install-devenv-hooks" default.config.pre-commit.installationScript;
-            in
-            devenv.lib.mkShell {
-              inherit inputs pkgs;
-              # File types:
-              # - *.json (various config files)
-              # - *.json5 (Renovate)
-              # - *.md (README.md)
-              # - *.sh (various shell scripts)
-              # - *.yml (GHA)
-              modules = [
-                {
-                  packages = [
-                    pre-commit-install-devenv-hooks
-                    pkgs.bashInteractive
-                    pkgs.git
-                    pkgs2.vscode.fhs
-                  ];
+        {
+          default = devenv.lib.mkShell {
+            inherit inputs;
 
-                  languages = {
-                    shell.enable = true;
-                  };
-
-                  pre-commit.hooks = {
-                    check-added-large-files.enable = true;
-                    check-case-conflicts.enable = true;
-                    check-json.enable = true;
-                    check-merge-conflicts.enable = true;
-                    check-symlinks.enable = true;
-                    check-yaml.enable = true;
-                    editorconfig-checker.enable = true;
-                    markdownlint = {
-                      enable = true;
-                      settings.configuration = {
-                        "MD013" = {
-                          "line_length" = 118;
-                        };
-                      };
-                    };
-                    ripsecrets.enable = true;
-                    trufflehog.enable = true;
-                    typos.enable = true;
-                    yamllint = {
-                      enable = true;
-                      settings.configuration = ''
-                        extends: relaxed
-                        rules:
-                          line-length:
-                            max: 118
-                      '';
-                    };
-                  };
-                }
-              ];
+            # mkShell doesn't have `specialArgs`
+            pkgs = pkgs // {
+              unstable = pkgs-unstable;
             };
+
+            modules = [
+              ../../modules/common.nix
+              ../../modules/scratch-common.nix
+            ];
+          };
         }
       );
     };
