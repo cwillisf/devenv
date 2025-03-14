@@ -1,0 +1,16 @@
+[formatter.deadnix]
+command = "deadnix"
+options = ["--edit"]
+includes = ["*.nix"]
+priority = 1
+
+[formatter.nixfmt-rfc-style]
+command = "nixfmt"
+options = ["--strict"]
+includes = ["*.nix"]
+priority = 2
+
+[formatter.taplo]
+command = "taplo"
+options = ["fmt"]
+includes = ["*.toml"]

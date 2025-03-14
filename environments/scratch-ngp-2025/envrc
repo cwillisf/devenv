@@ -1,0 +1,9 @@
+devenv_project_dir="$(pwd)"
+devenv_config_dir="$(cd -- "$(dirname -- "$(readlink -- "${BASH_SOURCE[0]}")")" &> /dev/null && pwd)"
+
+cd "$devenv_config_dir"
+use flake "$(pwd)" --no-pure-eval # the path could be "." but this makes the logs easier to read
+
+# The `use flake` command placed pre-commit files in the nix store but did not install them into the project.
+cd "$devenv_project_dir"
+pre-commit-install-devenv-hooks
