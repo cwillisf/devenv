@@ -8,10 +8,13 @@
     };
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:cachix/devenv-nixpkgs/rolling";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     devenv.url = "github:cachix/devenv";
     nix2container.url = "github:nlewo/nix2container";
     nix2container.inputs.nixpkgs.follows = "nixpkgs";
     mk-shell-bin.url = "github:rrbutani/nix-mk-shell-bin";
+
+    scratch-jr-android-studio.url = "github:nixos/nixpkgs?ref=959f3eb7862c0bd66cc953a8f199f2577e116c2a";
   };
 
   nixConfig = {
@@ -19,51 +22,42 @@
     extra-substituters = "https://devenv.cachix.org";
   };
 
-  outputs = inputs@{ flake-parts, devenv-root, ... }:
+  outputs = inputs@{ flake-parts, devenv-root, nixpkgs, ... }:
+    let
+      devEnvRoot = let
+          devenvRootFileContent = builtins.readFile devenv-root.outPath;
+        in
+          nixpkgs.lib.mkIf (devenvRootFileContent != "") devenvRootFileContent;
+      devEnvImport = path: (flake-parts.lib.importApply path { inherit devEnvRoot; });
+    in
     flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [
-        inputs.devenv.flakeModule
-      ];
       systems = [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
 
-      perSystem = { config, self', inputs', pkgs, system, ... }: {
-        # Per-system attributes can be defined here. The self' and inputs'
-        # module parameters provide easy access to attributes of the same
-        # system.
+      imports = [
+        inputs.devenv.flakeModule
+        (devEnvImport ./parts/scratch-jr.nix)
+      ];
 
-        # Equivalent to  inputs'.nixpkgs.legacyPackages.hello;
-        packages.default = pkgs.hello;
-
-        devenv.shells.default = {
-          devenv.root =
-            let
-              devenvRootFileContent = builtins.readFile devenv-root.outPath;
-            in
-            pkgs.lib.mkIf (devenvRootFileContent != "") devenvRootFileContent;
-
-          name = "my-project";
-
-          imports = [
-            # This is just like the imports in devenv.nix.
-            # See https://devenv.sh/guides/using-with-flake-parts/#import-a-devenv-module
-            # ./devenv-foo.nix
-          ];
-
-          # https://devenv.sh/reference/options/
-          packages = [ config.packages.default ];
-
-          enterShell = ''
-            hello
-          '';
-
-          processes.hello.exec = "hello";
+      perSystem = { config, self', inputs', lib, pkgs, pkgs-unstable, system, ... }:
+      {
+        _module.args.pkgs-unstable = import inputs.nixpkgs-unstable {
+          inherit system;
+          config.allowUnfreePredicate = pkg:
+            builtins.elem (lib.getName pkg) [
+              "code"
+              "vscode"
+            ];
         };
 
-      };
-      flake = {
-        # The usual flake attributes can be defined here, including system-
-        # agnostic ones like nixosModule and system-enumerating ones, although
-        # those are more easily expressed in perSystem.
+        # Default shell is configured for working on this flake
+        devenv.shells.default = {
+          devenv.root = devEnvRoot;
+          packages = [
+            pkgs.bashInteractive
+            pkgs.git
+            pkgs-unstable.vscode.fhs
+          ];
+        };
 
       };
     };
