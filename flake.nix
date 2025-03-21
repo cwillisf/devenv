@@ -23,42 +23,25 @@
   };
 
   outputs = inputs@{ flake-parts, devenv-root, nixpkgs, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } (
     let
-      devEnvRoot = let
-          devenvRootFileContent = builtins.readFile devenv-root.outPath;
-        in
-          nixpkgs.lib.mkIf (devenvRootFileContent != "") devenvRootFileContent;
-      devEnvImport = path: (flake-parts.lib.importApply path { inherit devEnvRoot; });
+      propsImport = path: props@{ shell-id }: (
+        flake-parts.lib.importApply path props
+      );
+      devEnvImport = path: (
+        flake-parts.lib.importApply path { inherit propsImport; }
+      );
     in
-    flake-parts.lib.mkFlake { inherit inputs; } {
+    {
       systems = [ "x86_64-linux" "i686-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin" ];
 
       imports = [
         inputs.devenv.flakeModule
-        (devEnvImport ./parts/scratch-jr.nix)
+        (devEnvImport ./parts/env-scratch-jr.nix)
+
+        # Define the default shell
+        (propsImport ./parts/props-common.nix { shell-id = "default"; })
       ];
-
-      perSystem = { config, self', inputs', lib, pkgs, pkgs-unstable, system, ... }:
-      {
-        _module.args.pkgs-unstable = import inputs.nixpkgs-unstable {
-          inherit system;
-          config.allowUnfreePredicate = pkg:
-            builtins.elem (lib.getName pkg) [
-              "code"
-              "vscode"
-            ];
-        };
-
-        # Default shell is configured for working on this flake
-        devenv.shells.default = {
-          devenv.root = devEnvRoot;
-          packages = [
-            pkgs.bashInteractive
-            pkgs.git
-            pkgs-unstable.vscode.fhs
-          ];
-        };
-
-      };
-    };
+    }
+  );
 }
