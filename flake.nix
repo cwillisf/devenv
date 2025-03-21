@@ -14,7 +14,8 @@
     nix2container.inputs.nixpkgs.follows = "nixpkgs";
     mk-shell-bin.url = "github:rrbutani/nix-mk-shell-bin";
 
-    scratch-jr-android-studio.url = "github:nixos/nixpkgs?ref=959f3eb7862c0bd66cc953a8f199f2577e116c2a";
+    # Frozen for Android Studio
+    nixpkgs-scratch-jr.url = "github:nixos/nixpkgs?ref=959f3eb7862c0bd66cc953a8f199f2577e116c2a";
   };
 
   nixConfig = {
