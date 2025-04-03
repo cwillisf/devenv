@@ -6,6 +6,7 @@ in
   packages = [
     pre-commit-install-devenv-hooks
     pkgs.bashInteractive
+    pkgs.gh
     pkgs.git
     pkgs.unstable.vscode.fhs
   ];
