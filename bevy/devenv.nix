@@ -1,6 +1,9 @@
 { pkgs, lib, config, inputs, ... }:
 
 {
+  cachix.enable = true;
+  cachix.pull = [ "pre-commit-hooks" ];
+
   # https://devenv.sh/basics/
   env.GREET = "devenv";
 
