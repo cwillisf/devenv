@@ -1,14 +1,23 @@
-{ pkgs, lib, config, inputs, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  inputs,
+  ...
+}:
 let
   pkgs-unstable = import inputs.nixpkgs-unstable {
-    system = pkgs.stdenv.system;
-    config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-      "code"
-      "vscode"
-    ];
+    inherit (pkgs.stdenv) system;
+    config.allowUnfreePredicate =
+      pkg:
+      builtins.elem (lib.getName pkg) [
+        "code"
+        "vscode"
+      ];
   };
   pre-commit-install-devenv-hooks = pkgs.writeScriptBin "pre-commit-install-devenv-hooks" config.pre-commit.installationScript;
-in {
+in
+{
   cachix.enable = true;
   cachix.pull = [
     "nix-community"

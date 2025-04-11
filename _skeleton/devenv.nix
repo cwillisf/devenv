@@ -1,9 +1,11 @@
 { pkgs, inputs, ... }:
 let
   treefmt-nix = (import inputs.treefmt-nix).mkWrapper pkgs {
-    programs.rustfmt.enable = true;
+    # programs.rustfmt.enable = true;
   };
-in {
+in
+{
+  # languages.rust.enable = true;
   pre-commit.hooks = {
     treefmt = {
       enable = true;
