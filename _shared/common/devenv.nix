@@ -7,6 +7,7 @@ let
       "vscode"
     ];
   };
+  pre-commit-install-devenv-hooks = pkgs.writeScriptBin "pre-commit-install-devenv-hooks" config.pre-commit.installationScript;
 in {
   cachix.enable = true;
   cachix.pull = [
@@ -15,6 +16,7 @@ in {
   ];
 
   packages = [
+    pre-commit-install-devenv-hooks
     pkgs.bashInteractive
     pkgs.gh
     pkgs.git
