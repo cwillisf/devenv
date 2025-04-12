@@ -19,7 +19,7 @@ let
     xorg.libXcursor
     xorg.libXi
     xorg.libXrandr
-    
+
     # To use the wayland feature
     libxkbcommon
     wayland

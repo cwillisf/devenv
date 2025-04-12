@@ -1,5 +1,4 @@
-_:
-{
+_: {
   languages.rust.enable = true;
 
   pre-commit.hooks = {
