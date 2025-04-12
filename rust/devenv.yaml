@@ -14,6 +14,9 @@ inputs:
         follows: nixpkgs
   treefmt-nix:
     url: github:numtide/treefmt-nix
+    inputs:
+      nixpkgs:
+        follows: nixpkgs
 
 # If you're using non-OSS software, you can set allowUnfree to true.
 # allowUnfree: true
