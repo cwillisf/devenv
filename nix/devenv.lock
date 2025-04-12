@@ -133,11 +133,11 @@
     "shared": {
       "flake": false,
       "locked": {
-        "path": "_shared/",
+        "path": "../_shared/",
         "type": "path"
       },
       "original": {
-        "path": "_shared/",
+        "path": "../_shared/",
         "type": "path"
       },
       "parent": []
