@@ -7,6 +7,11 @@ inputs:
   shared:
     url: path:../_shared/
     flake: false
+  fenix:
+    url: github:nix-community/fenix
+    inputs:
+      nixpkgs:
+        follows: nixpkgs
   treefmt-nix:
     url: github:numtide/treefmt-nix
 
