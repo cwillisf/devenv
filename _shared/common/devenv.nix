@@ -48,6 +48,11 @@ in
     };
     ripsecrets.enable = true;
     trufflehog.enable = true;
-    typos.enable = true;
+    typos = {
+      enable = true;
+      settings.ignored-words = [
+        "Hashi" # HashiCorp
+      ];
+    };
   };
 }
