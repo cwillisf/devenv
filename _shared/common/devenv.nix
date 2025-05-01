@@ -73,6 +73,7 @@ in
       enable = true;
       settings.ignored-words = [
         "Hashi" # HashiCorp
+        "inferrable" # @typescript-eslint/no-inferrable-types
       ];
     };
   };
