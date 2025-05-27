@@ -55,7 +55,18 @@ in
       entry = "gitlint --staged --ignore body-is-missing --msg-filename";
     };
     html-tidy.enable = true;
-    lychee.enable = true;
+    lychee = {
+      enable = true;
+      settings.configPath = toString (
+        pkgs.writeText "lychee.toml" ''
+          cache = true
+          max_cache_age = "2d"
+          exclude_path = ['package-lock.json$']
+          exclude = ['\$%7B']
+          exclude_all_private = true
+        ''
+      );
+    };
     markdownlint = {
       enable = true;
       settings.configuration = {
