@@ -3,6 +3,8 @@ let
   treefmt-nix = (import inputs.treefmt-nix).mkWrapper pkgs;
 in
 {
+  dotenv.enable = true;
+
   languages.javascript.package = pkgs.nodejs_20; # not slim = includes npm
 
   pre-commit.hooks = {
