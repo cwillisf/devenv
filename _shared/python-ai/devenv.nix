@@ -19,7 +19,6 @@ in
 {
   languages.python = {
     enable = true;
-    venv.enable = true;
     libraries = python-libs;
   };
 
