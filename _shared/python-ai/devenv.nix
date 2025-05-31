@@ -12,6 +12,7 @@ let
     cudatoolkit
     glib
     libGL
+    micromamba
     pkg-config
     stdenv.cc.cc.lib
   ];
