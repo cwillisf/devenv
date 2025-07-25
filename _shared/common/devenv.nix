@@ -79,7 +79,7 @@ in
     ripsecrets.enable = true;
     shellcheck.enable = true;
     trim-trailing-whitespace.enable = true;
-    #trufflehog.enable = true;
+    trufflehog.enable = true;
     typos = {
       enable = true;
       settings.ignored-words = [
