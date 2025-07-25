@@ -15,7 +15,7 @@ let
         "vscode"
       ];
   };
-  pre-commit-install-devenv-hooks = pkgs.writeScriptBin "pre-commit-install-devenv-hooks" config.pre-commit.installationScript;
+  git-hooks-installation-script = pkgs.writeScriptBin "git-hooks-installation-script" config.git-hooks.installationScript;
 in
 {
   cachix.enable = true;
@@ -27,14 +27,14 @@ in
   languages.shell.enable = true;
 
   packages = [
-    pre-commit-install-devenv-hooks
+    git-hooks-installation-script
     pkgs.bashInteractive
     pkgs.gh
     pkgs.git
     pkgs-unstable.vscode-fhs
   ];
 
-  pre-commit.hooks = {
+  git-hooks.hooks = {
     check-added-large-files.enable = true;
     check-case-conflicts.enable = true;
     check-executables-have-shebangs.enable = true;

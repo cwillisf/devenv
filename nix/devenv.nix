@@ -4,7 +4,7 @@ let
 in
 {
   languages.nix.enable = true;
-  pre-commit.hooks = {
+  git-hooks.hooks = {
     nil.enable = true;
     pre-commit-hook-ensure-sops.enable = true; # pre-commit hook to ensure that files that should be encrypted with sops are
     statix.enable = true;

@@ -34,7 +34,7 @@ in
       pkg-config
     ]);
 
-  pre-commit.hooks = {
+  git-hooks.hooks = {
     treefmt = {
       enable = true;
       package = treefmt-nix {

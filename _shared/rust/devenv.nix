@@ -15,7 +15,7 @@ _: {
     ];
   };
 
-  pre-commit.hooks = {
+  git-hooks.hooks = {
     cargo-check.enable = true;
     check-toml.enable = true;
     clippy.enable = true;

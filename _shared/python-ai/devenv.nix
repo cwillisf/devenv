@@ -39,7 +39,7 @@ in
 
   packages = python-libs;
 
-  pre-commit.hooks = {
+  git-hooks.hooks = {
     treefmt = {
       enable = true;
       package = treefmt-nix {

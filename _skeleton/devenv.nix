@@ -5,7 +5,7 @@ in
 {
   # languages.rust.enable = true;
 
-  pre-commit.hooks = {
+  git-hooks.hooks = {
     actionlint.enable = true; # Static checker for GitHub Actions workflow files
     alejandra.enable = true; # The Uncompromising Nix Code Formatter
     annex.enable = true; # Runs the git-annex hook for large file support

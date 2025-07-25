@@ -7,7 +7,7 @@ _: {
   #languages.javascript.package = pkgs.nodejs_20-slim; # specific version slim
   #languages.npm.enable = true;
 
-  pre-commit.hooks = {
+  git-hooks.hooks = {
     check-json.enable = true;
   };
 }

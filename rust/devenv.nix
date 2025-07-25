@@ -3,7 +3,7 @@ let
   treefmt-nix = (import inputs.treefmt-nix).mkWrapper pkgs;
 in
 {
-  pre-commit.hooks = {
+  git-hooks.hooks = {
     treefmt = {
       enable = true;
       package = treefmt-nix {

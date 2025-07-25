@@ -7,7 +7,7 @@ in
 
   languages.javascript.package = pkgs.nodejs_20; # not slim = includes npm
 
-  pre-commit.hooks = {
+  git-hooks.hooks = {
     treefmt = {
       enable = true;
       package = treefmt-nix {

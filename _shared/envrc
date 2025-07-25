@@ -18,5 +18,5 @@ fi
 
 cd "$devenv_project_dir"
 
-# The `use flake` command placed pre-commit files in the nix store but did not install them into the project.
-pre-commit-install-devenv-hooks
+# The `use flake` command placed git-hooks files in the nix store but did not install them into the project.
+git-hooks-installation-script
