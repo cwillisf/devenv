@@ -1,5 +1,4 @@
-_:
-{
+_: {
   languages.javascript.enable = true;
   # npm is excluded from "slim" versions of nodejs but included in the regular ones
   #languages.javascript.package = pkgs.nodejs-slim; # latest slim (default)
