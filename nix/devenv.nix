@@ -20,15 +20,13 @@ in
             settings = {
               formatter = {
                 retain_line_breaks_single = true;
+                max_line_length = 118;
+                eof_newline = true;
               };
             };
           };
         };
       };
-    };
-    yamllint = {
-      enable = true;
-      settings.configData = "{extends: default, rules: {document-start: disable}}";
     };
   };
 }

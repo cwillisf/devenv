@@ -18,25 +18,13 @@ in
             settings = {
               formatter = {
                 retain_line_breaks_single = true;
+                max_line_length = 118;
+                eof_newline = true;
               };
             };
           };
         };
       };
-    };
-    yamllint = {
-      enable = true;
-      settings.configData = ''
-        extends: default
-        rules:
-          comments:
-            min-spaces-from-content: 1 # allow Renovate's version tags
-          document-start: disable
-          line-length:
-            max: 118
-            level: warning
-          truthy: disable # false positives with GHA
-      '';
     };
   };
 }

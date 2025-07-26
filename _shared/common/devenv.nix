@@ -87,5 +87,23 @@ in
         "inferrable" # @typescript-eslint/no-inferrable-types
       ];
     };
+    yamllint = {
+      enable = true;
+      verbose = true; # show warnings
+      settings = {
+        strict = false; # don't fail on warnings
+        configData = ''
+          extends: default
+          rules:
+            comments:
+              min-spaces-from-content: 1 # allow Renovate's version tags
+            document-start: disable
+            line-length:
+              max: 118
+              level: warning
+            truthy: disable # false positives with GHA
+        '';
+      };
+    };
   };
 }
