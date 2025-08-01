@@ -3,6 +3,10 @@ let
   treefmt-nix = (import inputs.treefmt-nix).mkWrapper pkgs;
 in
 {
+  packages = [
+    pkgs.sauce-connect
+  ];
+
   dotenv.enable = true;
 
   languages.javascript.package = pkgs.nodejs_20; # not slim = includes npm
