@@ -16,6 +16,17 @@ in
       enable = true;
       package = treefmt-nix {
         programs = {
+          # as of 2025-08-15, Prettier supports:
+          # JS/JSX/TS, Angular, Vue, Flow, CSS/Less/SCSS, HTML, Ember/Handlebars, JSON, GraphQL, Markdown, and YAML
+          # prettier = {
+          #   enable = true;
+          #   settings = {
+          #     editorconfig = true;
+          #     embeddedLanguageFormatting = "auto";
+          #     printWidth = 118;
+          #     quoteProps = "consistent";
+          #   };
+          # };
           yamlfmt = {
             enable = true;
             settings = {
@@ -34,11 +45,13 @@ in
             command = "${pkgs.actionlint}/bin/actionlint";
             options = [
               "-config-file"
-              (builtins.toString (pkgs.writeText "actionlint.yaml" ''
-                self-hosted-runner:
-                  labels:
-                    - Linux-ARM64-runner-v2
-              ''))
+              (builtins.toString (
+                pkgs.writeText "actionlint.yaml" ''
+                  self-hosted-runner:
+                    labels:
+                      - Linux-ARM64-runner-v2
+                ''
+              ))
             ];
             includes = [
               ".github/workflows/*.yaml"
