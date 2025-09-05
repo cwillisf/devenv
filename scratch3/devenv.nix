@@ -4,6 +4,7 @@ let
 in
 {
   packages = [
+    pkgs.fastly
     pkgs.sauce-connect
   ];
 
