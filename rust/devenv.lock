@@ -3,10 +3,10 @@
     "devenv": {
       "locked": {
         "dir": "src/modules",
-        "lastModified": 1758578119,
+        "lastModified": 1759157907,
         "owner": "cachix",
         "repo": "devenv",
-        "rev": "56782ef9e6fec7fc5cbbbd88f04ce114faac2e35",
+        "rev": "3330b32752ebe6c23af86af06c23367e5d50bfb2",
         "type": "github"
       },
       "original": {
@@ -24,10 +24,10 @@
         "rust-analyzer-src": "rust-analyzer-src"
       },
       "locked": {
-        "lastModified": 1758609765,
+        "lastModified": 1759128018,
         "owner": "nix-community",
         "repo": "fenix",
-        "rev": "05545a7f3cd5cd5628b195520758e56e6734b90a",
+        "rev": "5c342209226275f704ab84d89efc80b2d3963517",
         "type": "github"
       },
       "original": {
@@ -94,10 +94,10 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1755783167,
+        "lastModified": 1758532697,
         "owner": "cachix",
         "repo": "devenv-nixpkgs",
-        "rev": "4a880fb247d24fbca57269af672e8f78935b0328",
+        "rev": "207a4cb0e1253c7658c6736becc6eb9cace1f25f",
         "type": "github"
       },
       "original": {
@@ -109,10 +109,10 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1758427187,
+        "lastModified": 1759036355,
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "554be6495561ff07b6c724047bdd7e0716aa7b46",
+        "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
         "type": "github"
       },
       "original": {
@@ -139,10 +139,10 @@
     "rust-analyzer-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1758556272,
+        "lastModified": 1759060464,
         "owner": "rust-lang",
         "repo": "rust-analyzer",
-        "rev": "d05355db16dc526bb16bd84769ea840668d7015e",
+        "rev": "5c0b555a65cadc14a6a16865c3e065c9d30b0bef",
         "type": "github"
       },
       "original": {
@@ -171,10 +171,10 @@
         ]
       },
       "locked": {
-        "lastModified": 1758206697,
+        "lastModified": 1758728421,
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "rev": "128222dc911b8e2e18939537bed1762b7f3a04aa",
+        "rev": "5eda4ee8121f97b218f7cc73f5172098d458f1d1",
         "type": "github"
       },
       "original": {
