@@ -6,7 +6,12 @@ in
   packages = [
     pkgs.fastly
     pkgs.sauce-connect
+    pkgs.libuuid
   ];
+
+  env = {
+    LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.libuuid ];
+  };
 
   dotenv.enable = true;
 
