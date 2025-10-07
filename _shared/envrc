@@ -11,9 +11,12 @@ cd "$devenv_config_dir"
 
 if [[ -f "devenv.yaml" ]]; then
   eval "$(devenv direnvrc)"
-  use devenv "$(pwd)"
+  use devenv
 else
-  use flake "$(pwd)" --no-pure-eval # the path could be "." but this makes the logs easier to read
+  # TODO: test if this still works in newer devenv versions
+  # use flake "$(pwd)" --no-pure-eval # the path could be "." but this makes the logs easier to read
+  echo "devenv.yaml not found in $devenv_config_dir"
+  false
 fi
 
 cd "$devenv_project_dir"
