@@ -2,8 +2,6 @@
 inputs:
   nixpkgs:
     url: github:cachix/devenv-nixpkgs/rolling
-  nixpkgs-unstable:
-    url: github:NixOS/nixpkgs/nixos-unstable
   shared:
     url: path:../_shared/
     flake: false

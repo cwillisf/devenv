@@ -1,20 +1,9 @@
 {
   pkgs,
-  lib,
   config,
-  inputs,
   ...
 }:
 let
-  pkgs-unstable = import inputs.nixpkgs-unstable {
-    inherit (pkgs.stdenv) system;
-    config.allowUnfreePredicate =
-      pkg:
-      builtins.elem (lib.getName pkg) [
-        "code"
-        "vscode"
-      ];
-  };
   git-hooks-installation-script = pkgs.writeScriptBin "git-hooks-installation-script" config.git-hooks.installationScript;
 in
 {
@@ -31,7 +20,7 @@ in
     pkgs.bashInteractive
     pkgs.gh
     pkgs.git
-    pkgs-unstable.vscode-fhs
+    pkgs.vscode-fhs
   ];
 
   git-hooks.hooks = {
