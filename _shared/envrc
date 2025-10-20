@@ -1,0 +1,25 @@
+export DIRENV_WARN_TIMEOUT=20s
+
+devenv_project_dir="$(pwd)"
+
+devenv_config_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+if [[ ! -f "$devenv_config_dir/devenv.yaml" ]]; then
+  devenv_config_dir="$(cd -- "$(dirname -- "$(readlink -- "${BASH_SOURCE[0]}")")" &> /dev/null && pwd)"
+fi
+
+cd "$devenv_config_dir"
+
+if [[ -f "devenv.yaml" ]]; then
+  eval "$(devenv direnvrc)"
+  use devenv
+else
+  # TODO: test if this still works in newer devenv versions
+  # use flake "$(pwd)" --no-pure-eval # the path could be "." but this makes the logs easier to read
+  echo "devenv.yaml not found in $devenv_config_dir"
+  false
+fi
+
+cd "$devenv_project_dir"
+
+# The `use flake` command placed git-hooks files in the nix store but did not install them into the project.
+git-hooks-installation-script
