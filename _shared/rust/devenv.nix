@@ -15,6 +15,8 @@ _: {
     ];
   };
 
+  env.CARGO_PROFILE_DEV_BUILD_OVERRIDE_DEBUG = "true";
+
   git-hooks.hooks = {
     cargo-check.enable = true;
     check-toml.enable = true;
