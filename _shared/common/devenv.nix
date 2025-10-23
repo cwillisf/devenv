@@ -20,7 +20,6 @@ in
     pkgs.bashInteractive
     pkgs.gh
     pkgs.git
-    pkgs.vscode-fhs
   ];
 
   git-hooks.hooks = {
