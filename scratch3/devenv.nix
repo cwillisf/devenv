@@ -15,6 +15,7 @@ in
 
   dotenv.enable = true;
 
+  languages.java.enable = true; # for legacy Closure compiler
   languages.javascript.package = pkgs.nodejs_20; # not slim = includes npm
 
   git-hooks.hooks = {
