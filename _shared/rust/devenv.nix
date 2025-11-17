@@ -1,7 +1,7 @@
 _: {
   languages.rust = {
     enable = true;
-    channel = "stable";
+    #channel = "stable";
     components = [
       # Defaults
       "rustc"
@@ -11,7 +11,7 @@ _: {
       "rust-analyzer"
 
       # Extras
-      "rust-src"
+      #"rust-src"
     ];
   };
 
