@@ -1,13 +1,26 @@
-_: {
-  languages.javascript.enable = true;
-  # npm is excluded from "slim" versions of nodejs but included in the regular ones
-  #languages.javascript.package = pkgs.nodejs-slim; # latest slim (default)
-  #languages.javascript.package = pkgs.nodejs; # latest regular
-  #languages.javascript.package = pkgs.nodejs_20; # # specific version
-  #languages.javascript.package = pkgs.nodejs_20-slim; # specific version slim
-  #languages.npm.enable = true;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
+  options.devenv-override.node-major = lib.mkOption {
+    type = lib.types.str;
+    default = "";
+    description = "Major version of Node.js to use, e.g. '20' for Node.js 20.x";
+  };
 
-  git-hooks.hooks = {
-    check-json.enable = true;
+  config = {
+    languages.javascript = {
+      enable = true;
+      package = lib.mkIf (
+        config.devenv-override.node-major != ""
+      ) pkgs."nodejs_${config.devenv-override.node-major}";
+    };
+
+    git-hooks.hooks = {
+      check-json.enable = true;
+    };
   };
 }

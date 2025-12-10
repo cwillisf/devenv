@@ -1,6 +1,13 @@
 export DIRENV_WARN_TIMEOUT=20s
 
+devenv_args=()
+
 devenv_project_dir="$(pwd)"
+
+watch_file "${devenv_project_dir}/.nvmrc"
+if [[ -r "${devenv_project_dir}/.nvmrc" ]]; then
+  devenv_args+=("--option" "devenv-override.node-major:string" "$(sed -E 's/v?([0-9]+).*/\1/' < "$devenv_project_dir/.nvmrc")")
+fi
 
 devenv_config_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 if [[ ! -f "$devenv_config_dir/devenv.yaml" ]]; then
@@ -11,7 +18,7 @@ cd "$devenv_config_dir"
 
 if [[ -f "devenv.yaml" ]]; then
   eval "$(devenv direnvrc)"
-  use devenv
+  use devenv "${devenv_args[@]}"
 else
   # TODO: test if this still works in newer devenv versions
   # use flake "$(pwd)" --no-pure-eval # the path could be "." but this makes the logs easier to read
