@@ -32,7 +32,7 @@ in
     check-symlinks.enable = true;
     detect-aws-credentials.enable = true;
     detect-private-keys.enable = true;
-    editorconfig-checker.enable = true;
+    #editorconfig-checker.enable = true; # broken for Markdown vs. Prettier
     end-of-file-fixer.enable = true;
     fix-byte-order-marker.enable = true;
     gitlint = {
