@@ -17,6 +17,7 @@ in
 
   packages = [
     git-hooks-installation-script
+    pkgs.antigravity
     pkgs.bashInteractive
     pkgs.gh
     pkgs.git
