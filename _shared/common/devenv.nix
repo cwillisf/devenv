@@ -4,7 +4,12 @@
   ...
 }:
 let
-  git-hooks-installation-script = pkgs.writeScriptBin "git-hooks-installation-script" config.git-hooks.installationScript;
+  git-hooks-installation-script = pkgs.writeScriptBin "git-hooks-installation-script" (
+    if config.git-hooks.enable then
+      config.git-hooks.installationScript
+    else
+      "echo git-hooks.enable is false"
+  );
 in
 {
   cachix.enable = true;
