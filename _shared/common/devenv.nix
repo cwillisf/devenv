@@ -55,10 +55,13 @@ in
       settings.configPath = toString (
         pkgs.writeText "lychee.toml" ''
           cache = true
-          max_cache_age = "2d"
           exclude_path = ['package-lock.json$']
-          exclude = ['\$%7B']
+          exclude = ['\$%7B', '/postgresql:/@/', '@users\.noreply\.github\.com$']
           exclude_all_private = true
+          hidden = true
+          include_mail = true
+          include_verbatim = true
+          max_cache_age = "2d"
         ''
       );
     };
@@ -78,8 +81,11 @@ in
     typos = {
       enable = true;
       settings.ignored-words = [
+        "Chararacters" # legacy misspelling in Konsole settings
         "Hashi" # HashiCorp
+        "HASS"
         "inferrable" # @typescript-eslint/no-inferrable-types
+        "substituters"
       ];
     };
     yamllint = {
