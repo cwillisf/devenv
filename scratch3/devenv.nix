@@ -4,13 +4,17 @@ let
 in
 {
   packages = [
+    pkgs.chromedriver
     pkgs.fastly
     pkgs.sauce-connect
     pkgs.libuuid
+    # pkgs.playwright-driver.browsers
+    pkgs.ungoogled-chromium
   ];
 
   env = {
     LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.libuuid ];
+    # PLAYWRIGHT_BROWSERS_PATH = pkgs.playwright-driver.browsers;
   };
 
   dotenv.enable = true;
