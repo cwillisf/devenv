@@ -29,6 +29,7 @@ in
     pkgs.vscode
   ];
 
+  git-hooks.enable = false; # TODO: make this play nice with repo-scope hooks
   git-hooks.hooks = {
     check-added-large-files.enable = true;
     check-case-conflicts.enable = true;
