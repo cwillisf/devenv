@@ -13,7 +13,10 @@ in
   ];
 
   env = {
-    LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.libuuid ];
+    LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
+      pkgs.libgbm # chrome-headless-shell
+      pkgs.libuuid
+    ];
     # PLAYWRIGHT_BROWSERS_PATH = pkgs.playwright-driver.browsers;
   };
 
@@ -21,6 +24,7 @@ in
 
   languages.java.enable = true; # for legacy Closure compiler
 
+  git-hooks.enable = false; # stop fighting with husky
   git-hooks.hooks = {
     treefmt = {
       enable = true;
