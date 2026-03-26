@@ -24,7 +24,6 @@ in
 
   languages.java.enable = true; # for legacy Closure compiler
 
-  git-hooks.enable = false; # stop fighting with husky
   git-hooks.hooks = {
     treefmt = {
       enable = true;

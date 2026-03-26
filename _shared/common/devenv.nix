@@ -1,15 +1,23 @@
 {
   pkgs,
   config,
+  lib,
   ...
 }:
 let
-  git-hooks-installation-script = pkgs.writeScriptBin "git-hooks-installation-script" (
-    if config.git-hooks.enable then
-      config.git-hooks.installationScript
-    else
-      "echo git-hooks.enable is false"
-  );
+  hookDir = "${config.devenv.root}/.devenv/git-hooks";
+  prekDir = "${config.devenv.root}/.devenv/prek"; # prek hooks will go into a "hooks" subdir
+  prekHookDir = "${prekDir}/hooks"; # subdir must be named "hooks" to make `prek install --git-dir` happy
+  gitHookChainer = pkgs.writeShellScript "devenv-git-hook-chainer" ''
+    set -e
+    hook=$(basename "$0")
+    if [ -x "${prekHookDir}/$hook" ]; then
+      "${prekHookDir}/$hook" "$@"
+    fi
+    if [ -x ".git/hooks/$hook" ]; then
+      ".git/hooks/$hook" "$@"
+    fi
+  '';
 in
 {
   cachix.enable = true;
@@ -21,7 +29,6 @@ in
   languages.shell.enable = true;
 
   packages = [
-    git-hooks-installation-script
     pkgs.antigravity
     pkgs.bashInteractive
     pkgs.gh
@@ -29,7 +36,32 @@ in
     pkgs.vscode
   ];
 
-  git-hooks.enable = false; # TODO: make this play nice with repo-scope hooks
+  # Install hooks into a devenv-local directory so they don't clobber husky's .git/hooks/.
+  # GIT_CONFIG_* overrides core.hooksPath at higher priority than repo config (e.g. set by husky),
+  # and is automatically active only while inside the devenv shell.
+  env = lib.mkIf config.git-hooks.enable {
+    GIT_CONFIG_COUNT = "1";
+    GIT_CONFIG_KEY_0 = "core.hooksPath";
+    GIT_CONFIG_VALUE_0 = hookDir;
+  };
+
+  tasks = lib.mkIf config.git-hooks.enable {
+    "devenv:git-hooks:install".exec = lib.mkForce ''
+      if ! "${lib.getExe pkgs.git}" rev-parse --git-dir &> /dev/null; then
+        echo 1>&2 "WARNING: git-hooks: .git not found; skipping hook installation."
+        exit 0
+      fi
+      echo "Installing git hooks into ${hookDir} which will chain with ${prekHookDir}..."
+      mkdir -p "${hookDir}"
+      mkdir -p "${prekHookDir}"
+      for stage in pre-commit pre-merge-commit prepare-commit-msg commit-msg post-commit pre-rebase post-checkout post-merge pre-push post-rewrite; do
+        ln -sf "${gitHookChainer}" "${hookDir}/$stage"
+        GIT_CONFIG_COUNT=0 "${lib.getExe pkgs.prek}" install --git-dir "${prekDir}" -f -c "${config.devenv.root}/${config.git-hooks.configPath}" -t "$stage"
+      done
+      echo "Installed git hooks into ${hookDir} which will chain with ${prekHookDir}."
+    '';
+  };
+
   git-hooks.hooks = {
     check-added-large-files.enable = true;
     check-case-conflicts.enable = true;

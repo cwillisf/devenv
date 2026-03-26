@@ -3,17 +3,76 @@
     "devenv": {
       "locked": {
         "dir": "src/modules",
-        "lastModified": 1774428097,
-        "narHash": "sha256-yQAutPgbsVHsN/SygZDyzMRxQn6Im53PJkrI377N8Sg=",
+        "lastModified": 1774475276,
+        "narHash": "sha256-z4erC+oMEuBHtox+B46FCv77IPvNy4SyXw/EeBxsD4I=",
         "owner": "cachix",
         "repo": "devenv",
-        "rev": "957d63f663f230dc8ac3b85f950690e56fe8b1e0",
+        "rev": "f8ca2c061ec2feceee1cf1c5e52c92f58b6aec9c",
         "type": "github"
       },
       "original": {
         "dir": "src/modules",
         "owner": "cachix",
         "repo": "devenv",
+        "type": "github"
+      }
+    },
+    "flake-compat": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767039857,
+        "narHash": "sha256-vNpUSpF5Nuw8xvDLj2KCwwksIbjua2LZCqhV1LNRDns=",
+        "owner": "NixOS",
+        "repo": "flake-compat",
+        "rev": "5edf11c44bc78a0d334f6334cdaf7d60d732daab",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
+    "git-hooks": {
+      "inputs": {
+        "flake-compat": "flake-compat",
+        "gitignore": "gitignore",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1774104215,
+        "narHash": "sha256-EAtviqz0sEAxdHS4crqu7JGR5oI3BwaqG0mw7CmXkO8=",
+        "owner": "cachix",
+        "repo": "git-hooks.nix",
+        "rev": "f799ae951fde0627157f40aec28dec27b22076d0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cachix",
+        "repo": "git-hooks.nix",
+        "type": "github"
+      }
+    },
+    "gitignore": {
+      "inputs": {
+        "nixpkgs": [
+          "git-hooks",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1709087332,
+        "narHash": "sha256-HG2cCnktfHsKV0s4XW83gU3F57gaTljL9KNSuG6bnQs=",
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
+        "rev": "637db329424fd7e46cf4185293b9cc8c88c95394",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "gitignore.nix",
         "type": "github"
       }
     },
@@ -36,6 +95,7 @@
     "root": {
       "inputs": {
         "devenv": "devenv",
+        "git-hooks": "git-hooks",
         "nixpkgs": "nixpkgs",
         "shared": "shared",
         "treefmt-nix": "treefmt-nix"
