@@ -26,6 +26,25 @@ in
     "pre-commit-hooks"
   ];
 
+  claude.code = {
+    enable = true;
+    mcpServers = {
+      devenv = {
+        type = "stdio";
+        command = "devenv";
+        args = [ "mcp" ];
+        env = {
+          DEVENV_ROOT = config.devenv.root;
+        };
+      };
+      playwright = {
+        type = "stdio";
+        command = "npx";
+        args = [ "@playwright/mcp@latest" ];
+      };
+    };
+  };
+
   languages.shell.enable = true;
 
   packages = [
