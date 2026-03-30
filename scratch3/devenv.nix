@@ -10,6 +10,11 @@ in
     pkgs.libuuid
     # pkgs.playwright-driver.browsers
     pkgs.ungoogled-chromium
+
+    pkgs.cairo
+    pkgs.pango
+    pkgs.pixman
+    pkgs.pkg-config
   ];
 
   env = {
