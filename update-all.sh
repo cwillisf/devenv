@@ -13,5 +13,7 @@ done
 # The `success` array contains files for which `devenv update` did not error.
 # They're most likely modified, but it's possible that some or all are unchanged.
 if (( ${#success[@]} )); then
+  # Attempt the commit twice in case the first one runs pre-commit fixes.
+  git commit -m './update-all.sh' "${success[@]}" || \
   git commit -m './update-all.sh' "${success[@]}"
 fi
