@@ -14,8 +14,11 @@ let
     if [ -x "${prekHookDir}/$hook" ]; then
       "${prekHookDir}/$hook" "$@"
     fi
-    if [ -x ".git/hooks/$hook" ]; then
-      ".git/hooks/$hook" "$@"
+    # Read the repo's core.hooksPath without the devenv GIT_CONFIG_* overrides,
+    # so that tools like husky (which set core.hooksPath in repo config) are found.
+    repoHooksPath=$(GIT_CONFIG_COUNT=0 git config core.hooksPath 2>/dev/null || echo ".git/hooks")
+    if [ -x "$repoHooksPath/$hook" ]; then
+      "$repoHooksPath/$hook" "$@"
     fi
   '';
 in
