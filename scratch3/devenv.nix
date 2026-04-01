@@ -27,8 +27,6 @@ in
 
   dotenv.enable = true;
 
-  languages.java.enable = true; # for legacy Closure compiler
-
   git-hooks.hooks = {
     treefmt = {
       enable = true;
