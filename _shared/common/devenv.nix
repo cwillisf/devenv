@@ -129,7 +129,7 @@ in
       };
     };
     mixed-line-endings.enable = true;
-    ripsecrets.enable = true;
+    ripsecrets.enable = false; # too many false positives, including `data:image/png;base64,...`
     shellcheck.enable = true;
     trim-trailing-whitespace.enable = true;
     #trufflehog.enable = true; # broken as of 2025-11-16

@@ -133,7 +133,7 @@ in
     pyupgrade.enable = true; # Automatically upgrade syntax for newer versions.
     reuse.enable = true; # reuse is a tool for compliance with the REUSE recommendations.
     revive.enable = true; # A linter for Go source code.
-    ripsecrets.enable = true; # Prevent committing secret keys into your source code
+    ripsecrets.enable = false; # too many false positives, including `data:image/png;base64,...`
     rome.enable = true; # (Deprecated and replaced by `biome`)
     ruff.enable = true; # An extremely fast Python linter, written in Rust.
     ruff-format.enable = true; # An extremely fast Python code formatter, written in Rust.
