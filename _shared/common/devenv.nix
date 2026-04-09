@@ -32,14 +32,6 @@ in
   claude.code = {
     enable = true;
     mcpServers = {
-      devenv = {
-        type = "stdio";
-        command = "devenv";
-        args = [ "mcp" ];
-        env = {
-          DEVENV_ROOT = config.devenv.root;
-        };
-      };
       playwright = {
         type = "stdio";
         command = "npx";
