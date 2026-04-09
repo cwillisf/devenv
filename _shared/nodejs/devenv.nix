@@ -22,7 +22,10 @@
     };
 
     git-hooks.hooks = {
-      check-json.enable = true;
+      check-json = {
+        enable = true;
+        excludes = [ "tsconfig.*\\.json$" ];
+      };
     };
   };
 }

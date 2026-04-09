@@ -24,7 +24,10 @@ in
     check-case-conflicts.enable = true; # Check for files that would conflict in case-insensitive filesystems.
     check-docstring-first.enable = true; # Check that all docstrings appear above the code.
     check-executables-have-shebangs.enable = true; # Ensure that all non-binary executables have shebangs.
-    check-json.enable = true; # Check syntax of JSON files.
+    check-json = {
+      enable = true; # Check syntax of JSON files.
+      excludes = [ "tsconfig.*\\.json$" ];
+    };
     check-merge-conflicts.enable = true; # Check for files that contain merge conflict strings.
     check-python.enable = true; # Check syntax of Python file by parsing Python abstract syntax tree.
     check-shebang-scripts-are-executable.enable = true; # Ensure that all (non-binary) files with a shebang are executable.

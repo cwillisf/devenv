@@ -88,7 +88,10 @@ in
     check-added-large-files.enable = true;
     check-case-conflicts.enable = true;
     check-executables-have-shebangs.enable = true;
-    check-json.enable = true;
+    check-json = {
+      enable = true;
+      excludes = [ "tsconfig.*\\.json$" ];
+    };
     check-merge-conflicts.enable = true;
     check-symlinks.enable = true;
     detect-aws-credentials.enable = true;
