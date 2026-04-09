@@ -1,8 +1,15 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 {
+  # Sync with https://developer.android.com/build/jdks
+  languages.java.jdk.package = pkgs.jdk17;
+
   android = {
     enable = true;
     abis = [ "x86_64" ];
+    buildTools.version = [
+      "34.0.0"
+      "35.0.0"
+    ];
     emulator.enable = true;
     systemImages.enable = true;
     android-studio.enable = true;
