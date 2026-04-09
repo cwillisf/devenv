@@ -29,16 +29,7 @@ in
     "pre-commit-hooks"
   ];
 
-  claude.code = {
-    enable = true;
-    mcpServers = {
-      playwright = {
-        type = "stdio";
-        command = "npx";
-        args = [ "@playwright/mcp@latest" ];
-      };
-    };
-  };
+  claude.code.enable = true;
 
   languages.shell.enable = true;
 
