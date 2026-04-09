@@ -77,5 +77,21 @@ if [[ "$devenv_project_dir" != "$devenv_config_dir" ]]; then
   fi
 fi
 
+# Remove broken symlinks at the top of this directory whose target is in
+# /nix/store. These are devenv-generated files (.mcp.json, .lsp.json, etc.)
+# whose target derivation has been garbage-collected; `use devenv` below
+# regenerates them. The /nix/store filter ensures we never touch a broken
+# symlink the user created intentionally.
+shopt -s nullglob dotglob
+for f in *; do
+  [[ -L "$f" && ! -e "$f" ]] || continue
+  _target=$(readlink -- "$f")
+  if [[ "$_target" == /nix/store/* ]]; then
+    echo "envrc: removing broken symlink $f -> $_target (GC'd; will be regenerated)"
+    rm -- "$f"
+  fi
+done
+unset _target
+
 eval "$(devenv direnvrc)"
 use devenv "${devenv_args[@]}"
