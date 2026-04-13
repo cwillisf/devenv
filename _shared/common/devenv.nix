@@ -29,7 +29,21 @@ in
     "pre-commit-hooks"
   ];
 
-  claude.code.enable = true;
+  claude.code = {
+    enable = true;
+    hooks.git-hooks-run = {
+      matcher = "^(Edit|MultiEdit|Write)$";
+      command = toString (
+        pkgs.writeShellScript "claude-git-hooks-run" ''
+          set -euo pipefail
+          file=$(${pkgs.jq}/bin/jq -r '.tool_input.file_path // ""')
+          [[ -z "$file" || "$file" == "null" ]] && exit 0
+          root=$(${pkgs.git}/bin/git -C "$(dirname "$file")" rev-parse --show-toplevel 2>/dev/null) || exit 0
+          cd "$root" && ${lib.getExe config.git-hooks.package} run -c "${config.devenv.root}/${config.git-hooks.configPath}" --files "$file"
+        ''
+      );
+    };
+  };
 
   languages.shell.enable = true;
 
