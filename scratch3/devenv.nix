@@ -1,4 +1,9 @@
-{ pkgs, inputs, ... }:
+{
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
 let
   treefmt-nix = (import inputs.treefmt-nix).mkWrapper pkgs;
 in
@@ -58,7 +63,7 @@ in
         settings.formatter = {
           # treefmt-nix doesn't support settings for actionlint, so this hooks up actionlint as a custom formatter
           "actionlint" = {
-            command = "${pkgs.actionlint}/bin/actionlint";
+            command = lib.getExe pkgs.actionlint;
             options = [
               "-config-file"
               (builtins.toString (

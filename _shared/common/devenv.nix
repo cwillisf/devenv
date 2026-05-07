@@ -36,9 +36,9 @@ in
       command = toString (
         pkgs.writeShellScript "claude-git-hooks-run" ''
           set -euo pipefail
-          file=$(${pkgs.jq}/bin/jq -r '.tool_input.file_path // ""')
+          file=$(${lib.getExe pkgs.jq} -r '.tool_input.file_path // ""')
           [[ -z "$file" || "$file" == "null" ]] && exit 0
-          root=$(${pkgs.git}/bin/git -C "$(dirname "$file")" rev-parse --show-toplevel 2>/dev/null) || exit 0
+          root=$(${lib.getExe pkgs.git} -C "$(dirname "$file")" rev-parse --show-toplevel 2>/dev/null) || exit 0
           cd "$root" && ${lib.getExe config.git-hooks.package} run -c "${config.devenv.root}/${config.git-hooks.configPath}" --files "$file"
         ''
       );
