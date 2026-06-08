@@ -48,7 +48,6 @@ in
   languages.shell.enable = true;
 
   packages = [
-    pkgs.antigravity
     pkgs.bashInteractive
     pkgs.gh
     pkgs.git
