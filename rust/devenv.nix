@@ -1,15 +1,17 @@
 { pkgs, inputs, ... }:
 let
-  treefmt-nix = (import inputs.treefmt-nix).mkWrapper pkgs;
+  treefmt = import "${inputs.shared}/treefmt.nix" { inherit pkgs inputs; } {
+    programs.rustfmt.enable = true;
+    programs.taplo.enable = true;
+  };
 in
 {
+  inherit (treefmt) packages;
+
   git-hooks.hooks = {
     treefmt = {
       enable = true;
-      package = treefmt-nix {
-        programs.rustfmt.enable = true;
-        programs.taplo.enable = true;
-      };
+      package = treefmt.wrapper;
     };
   };
 }

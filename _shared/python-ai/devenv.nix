@@ -5,7 +5,21 @@
   ...
 }:
 let
-  treefmt-nix = (import inputs.treefmt-nix).mkWrapper pkgs;
+  treefmt = import "${inputs.shared}/treefmt.nix" { inherit pkgs inputs; } {
+    programs = {
+      actionlint.enable = true;
+      yamlfmt = {
+        enable = true;
+        settings = {
+          formatter = {
+            retain_line_breaks_single = true;
+            max_line_length = 118;
+            eof_newline = true;
+          };
+        };
+      };
+    };
+  };
   python-libs = with pkgs; [
     cudaPackages.cudnn
     cudaPackages.cuda_cudart
@@ -37,26 +51,12 @@ in
     ];
   };
 
-  packages = python-libs;
+  packages = python-libs ++ treefmt.packages;
 
   git-hooks.hooks = {
     treefmt = {
       enable = true;
-      package = treefmt-nix {
-        programs = {
-          actionlint.enable = true;
-          yamlfmt = {
-            enable = true;
-            settings = {
-              formatter = {
-                retain_line_breaks_single = true;
-                max_line_length = 118;
-                eof_newline = true;
-              };
-            };
-          };
-        };
-      };
+      package = treefmt.wrapper;
     };
   };
 }

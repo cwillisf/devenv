@@ -5,7 +5,10 @@
   ...
 }:
 let
-  treefmt-nix = (import inputs.treefmt-nix).mkWrapper pkgs;
+  treefmt = import "${inputs.shared}/treefmt.nix" { inherit pkgs inputs; } {
+    programs.rustfmt.enable = true;
+    programs.taplo.enable = true;
+  };
 
   # See https://github.com/bevyengine/bevy/blob/latest/docs/linux_dependencies.md#nix
   # `bevy-libs` above is taken from `buildInputs` and the extra `packages` below are taken from `nativeBuildInputs`
@@ -32,15 +35,13 @@ in
     bevy-libs
     ++ (with pkgs; [
       pkg-config
-    ]);
+    ])
+    ++ treefmt.packages;
 
   git-hooks.hooks = {
     treefmt = {
       enable = true;
-      package = treefmt-nix {
-        programs.rustfmt.enable = true;
-        programs.taplo.enable = true;
-      };
+      package = treefmt.wrapper;
     };
   };
 }
