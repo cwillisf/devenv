@@ -78,6 +78,19 @@ in
       done
       echo "Installed git hooks into ${hookDir} which will chain with ${prekHookDir}."
     '';
+
+    # devenv 2.3.x schedules "devenv:git-hooks:run" (prek run -a) on every shell
+    # entry: `devenv shell` resolves the graph in RunMode::All, which visits
+    # "devenv:enterTest" (it declares after = [ "devenv:enterShell" ]) and then
+    # pulls in that task's prerequisites. "devenv:git-hooks:run" reaches the
+    # shell path only through its before = [ "devenv:enterTest" ] edge, so
+    # dropping the edge keeps it off shell entry. Without this, entering a
+    # project runs every hook over every file, and a directory that isn't a git
+    # repo (e.g. ~/claude) fails outright on `git rev-parse --show-toplevel`.
+    # Tradeoff: `devenv test` no longer runs the hook suite. Commit-time
+    # enforcement is unaffected - the install task above still wires up prek.
+    # Drop this once cachix/devenv#3184 is fixed.
+    "devenv:git-hooks:run".before = lib.mkForce [ ];
   };
 
   git-hooks.hooks = {
