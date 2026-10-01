@@ -30,3 +30,4 @@ allowUnfree: true # sauce-connect
 imports:
   - shared/common
   - shared/nodejs
+  - shared/scratch-web

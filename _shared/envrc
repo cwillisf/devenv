@@ -31,7 +31,7 @@ if [[ "$devenv_project_dir" != "$devenv_config_dir" ]]; then
   for f in devenv.yaml devenv.nix; do
     [[ -e "$devenv_config_dir/$f" ]] || continue
     if [[ "$(readlink -- "$f" 2>/dev/null)" != "$devenv_config_dir/$f" ]]; then
-      ln -sf "$devenv_config_dir/$f" "$f"
+      ln -sfn "$devenv_config_dir/$f" "$f"
     fi
   done
 
@@ -73,7 +73,7 @@ if [[ "$devenv_project_dir" != "$devenv_config_dir" ]]; then
     false
   fi
   if [[ "$(readlink -- ".devenv" 2>/dev/null)" != "$devenv_config_dir/.devenv" ]]; then
-    ln -sf "$devenv_config_dir/.devenv" .devenv
+    ln -sfn "$devenv_config_dir/.devenv" .devenv
   fi
 fi
 
