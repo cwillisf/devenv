@@ -147,6 +147,8 @@ in
     #trufflehog.enable = true; # broken as of 2025-11-16
     typos = {
       enable = true;
+      # Android translations (values-b+pt+BR/, values-es/, values-pt-rBR/): not English
+      excludes = [ "/res/values-(b\\+[^/]+|[a-z]{2,3}(-r[A-Z]{2})?)/" ];
       settings.ignored-words = [
         "Chararacters" # legacy misspelling in Konsole settings
         "Hashi" # HashiCorp
