@@ -34,21 +34,30 @@ in
 
   android = {
     enable = true;
-    abis = [ "x86_64" ];
-    buildTools.version = [
-      "34.0.0"
-      "35.0.0"
+    # x86 is only for API 26, whose Play Store image has no x86_64 build. Newer
+    # levels have no x86 images, so this adds nothing else.
+    abis = [
+      "x86_64"
+      "x86"
     ];
-    # 35 added, and google_apis_playstore_tablet added alongside the plain
-    # google_apis_playstore type, for tablet-shaped AVDs (e.g. "Pixel
-    # Tablet"). This SDK lives in the read-only Nix store, so anything an AVD
-    # needs has to be declared here rather than installed through Android
-    # Studio's AVD wizard - that fails with "Failed to read or create install
-    # properties file" since it can't write into the store.
+    # Match the Android Gradle Plugin's default build-tools version (35.0.0 for
+    # AGP 8.9). devenv also takes aapt2 from the first entry here, so a single
+    # entry keeps aapt2 the same version as the rest of the build tools.
+    buildTools.version = [ "35.0.0" ];
+    # Each version here is both a compile platform and a set of emulator
+    # images. Keep the oldest supported level (26), the newest targeted (36),
+    # and any level a build still compiles against (34, until scratch-android
+    # moves to compileSdk 36). google_apis_playstore_tablet is listed for
+    # tablet-shaped AVDs (e.g. "Pixel Tablet"), but nixpkgs has no such images
+    # at these levels, so it currently adds nothing; tablet AVDs use the plain
+    # google_apis_playstore images with a tablet device profile. This SDK
+    # lives in the read-only Nix store, so anything an AVD needs has to be
+    # declared here rather than installed through Android Studio's AVD wizard -
+    # that fails with "Failed to read or create install properties file" since
+    # it can't write into the store.
     platforms.version = [
-      "32"
+      "26"
       "34"
-      "35"
       "36"
     ];
     systemImageTypes = [
