@@ -46,9 +46,9 @@ in
     buildTools.version = [ "36.0.0" ];
     # Each version here is both a compile platform and a set of emulator
     # images. Keep the oldest supported level (26), the newest targeted (36),
-    # the newest release (37.0, for testing current apps on it), and any level
-    # a build still compiles against (34, until scratch-android moves to
-    # compileSdk 36). google_apis_playstore_tablet is listed for
+    # the newest release (37.0, for testing current apps on it), 35 (the first
+    # with enforced edge-to-edge, for testing), and any level a build still
+    # compiles against (34, until scratch-android moves to compileSdk 36). google_apis_playstore_tablet is listed for
     # tablet-shaped AVDs (e.g. "Pixel Tablet"), but nixpkgs has no such images
     # at these levels, so it currently adds nothing; tablet AVDs use the plain
     # google_apis_playstore images with a tablet device profile. This SDK
@@ -59,6 +59,7 @@ in
     platforms.version = [
       "26"
       "34"
+      "35"
       "36"
       "37.0"
     ];
