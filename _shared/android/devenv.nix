@@ -30,7 +30,7 @@ let
 in
 {
   # Sync with https://developer.android.com/build/jdks
-  languages.java.jdk.package = pkgs.jdk17;
+  languages.java.jdk.package = pkgs.jdk21;
 
   android = {
     enable = true;
