@@ -40,10 +40,10 @@ in
       "x86_64"
       "x86"
     ];
-    # Match the Android Gradle Plugin's default build-tools version (35.0.0 for
-    # AGP 8.9). devenv also takes aapt2 from the first entry here, so a single
+    # Match the Android Gradle Plugin's default build-tools version (36.0.0 for
+    # AGP 9). devenv also takes aapt2 from the first entry here, so a single
     # entry keeps aapt2 the same version as the rest of the build tools.
-    buildTools.version = [ "35.0.0" ];
+    buildTools.version = [ "36.0.0" ];
     # Each version here is both a compile platform and a set of emulator
     # images. Keep the oldest supported level (26), the newest targeted (36),
     # and any level a build still compiles against (34, until scratch-android
