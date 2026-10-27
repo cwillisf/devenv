@@ -5,19 +5,39 @@
   ...
 }:
 let
-  hookDir = "${config.devenv.root}/.devenv/git-hooks";
-  prekDir = "${config.devenv.root}/.devenv/prek"; # prek hooks will go into a "hooks" subdir
+  # Projects that use the same config share one .devenv/ (see _shared/envrc), so
+  # key hook state by project root. Otherwise the last project to install hooks
+  # wins, and every project runs prek against that project's config file.
+  rootKey = builtins.substring 0 16 (builtins.hashString "sha256" config.devenv.root);
+  hookStateDir = "${config.devenv.root}/.devenv/git-hooks-by-root/${rootKey}";
+  hookDir = "${hookStateDir}/chain";
+  prekDir = "${hookStateDir}/prek"; # prek hooks will go into a "hooks" subdir
   prekHookDir = "${prekDir}/hooks"; # subdir must be named "hooks" to make `prek install --git-dir` happy
   gitHookChainer = pkgs.writeShellScript "devenv-git-hook-chainer" ''
     set -e
     hook=$(basename "$0")
-    if [ -x "${prekHookDir}/$hook" ]; then
-      "${prekHookDir}/$hook" "$@"
+    # The GIT_CONFIG_* overrides below reach every repo git runs in while this
+    # environment is loaded, not just this project. Long-lived processes such as
+    # Claude Code keep the environment of their launch directory, so only run
+    # this project's prek hooks inside this project's own repo. In any other repo,
+    # use that repo's own prek hooks if it's a devenv project that has installed
+    # them (same layout, keyed by the same hash of its root).
+    toplevel=$(git rev-parse --show-toplevel 2>/dev/null || true)
+    root=$(cd "${config.devenv.root}" 2>/dev/null && pwd -P || true)
+    prekHooks=
+    if [ -n "$toplevel" ] && [ "$toplevel" = "$root" ]; then
+      prekHooks="${prekHookDir}"
+    elif [ -n "$toplevel" ]; then
+      key=$(printf %s "$toplevel" | ${pkgs.coreutils}/bin/sha256sum | ${pkgs.coreutils}/bin/cut -c1-16)
+      prekHooks="$toplevel/.devenv/git-hooks-by-root/$key/prek/hooks"
     fi
-    # Read the repo's core.hooksPath without the devenv GIT_CONFIG_* overrides,
-    # so that tools like husky (which set core.hooksPath in repo config) are found.
-    repoHooksPath=$(GIT_CONFIG_COUNT=0 git config core.hooksPath 2>/dev/null || echo ".git/hooks")
-    if [ -x "$repoHooksPath/$hook" ]; then
+    if [ -n "$prekHooks" ] && [ -x "$prekHooks/$hook" ]; then
+      "$prekHooks/$hook" "$@"
+    fi
+    # Find the repo's own hooks without the devenv GIT_CONFIG_* overrides, so that
+    # tools like husky (which set core.hooksPath in repo config) are found.
+    repoHooksPath=$(GIT_CONFIG_COUNT=0 git rev-parse --git-path hooks)
+    if [ "$repoHooksPath" != "${hookDir}" ] && [ -x "$repoHooksPath/$hook" ]; then
       "$repoHooksPath/$hook" "$@"
     fi
   '';
@@ -64,16 +84,22 @@ in
   };
 
   tasks = lib.mkIf config.git-hooks.enable {
+    # The chainer goes in even when the project isn't a git repo (e.g. ~/claude):
+    # core.hooksPath points at ${hookDir} regardless, and without the chainer
+    # other repos' own hooks would silently stop running.
     "devenv:git-hooks:install".exec = lib.mkForce ''
+      stages="pre-commit pre-merge-commit prepare-commit-msg commit-msg post-commit pre-rebase post-checkout post-merge pre-push post-rewrite"
+      mkdir -p "${hookDir}"
+      for stage in $stages; do
+        ln -sf "${gitHookChainer}" "${hookDir}/$stage"
+      done
       if ! "${lib.getExe pkgs.git}" rev-parse --git-dir &> /dev/null; then
-        echo 1>&2 "WARNING: git-hooks: .git not found; skipping hook installation."
+        echo 1>&2 "git-hooks: .git not found; installed the chainer only, skipping prek."
         exit 0
       fi
       echo "Installing git hooks into ${hookDir} which will chain with ${prekHookDir}..."
-      mkdir -p "${hookDir}"
       mkdir -p "${prekHookDir}"
-      for stage in pre-commit pre-merge-commit prepare-commit-msg commit-msg post-commit pre-rebase post-checkout post-merge pre-push post-rewrite; do
-        ln -sf "${gitHookChainer}" "${hookDir}/$stage"
+      for stage in $stages; do
         GIT_CONFIG_COUNT=0 "${lib.getExe pkgs.prek}" install --git-dir "${prekDir}" -f -c "${config.devenv.root}/${config.git-hooks.configPath}" -t "$stage"
       done
       echo "Installed git hooks into ${hookDir} which will chain with ${prekHookDir}."
