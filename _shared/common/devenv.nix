@@ -5,11 +5,10 @@
   ...
 }:
 let
-  # Projects that use the same config share one .devenv/ (see _shared/envrc), so
-  # key hook state by project root. Otherwise the last project to install hooks
-  # wins, and every project runs prek against that project's config file.
-  rootKey = builtins.substring 0 16 (builtins.hashString "sha256" config.devenv.root);
-  hookStateDir = "${config.devenv.root}/.devenv/git-hooks-by-root/${rootKey}";
+  # Under the project root's .devenv/ rather than config.devenv.dotfile, which a
+  # profile moves to .devenv/profiles/<name>; the chainer below needs one fixed
+  # place to find any project's hooks.
+  hookStateDir = "${config.devenv.root}/.devenv/git-hooks";
   hookDir = "${hookStateDir}/chain";
   prekDir = "${hookStateDir}/prek"; # prek hooks will go into a "hooks" subdir
   prekHookDir = "${prekDir}/hooks"; # subdir must be named "hooks" to make `prek install --git-dir` happy
@@ -18,18 +17,13 @@ let
     hook=$(basename "$0")
     # The GIT_CONFIG_* overrides below reach every repo git runs in while this
     # environment is loaded, not just this project. Long-lived processes such as
-    # Claude Code keep the environment of their launch directory, so only run
-    # this project's prek hooks inside this project's own repo. In any other repo,
-    # use that repo's own prek hooks if it's a devenv project that has installed
-    # them (same layout, keyed by the same hash of its root).
+    # Claude Code keep the environment of their launch directory, so run the prek
+    # hooks of whichever repo git is in: this project's in its own repo, another
+    # devenv project's in that one (same layout), and none in a repo without them.
     toplevel=$(git rev-parse --show-toplevel 2>/dev/null || true)
-    root=$(cd "${config.devenv.root}" 2>/dev/null && pwd -P || true)
     prekHooks=
-    if [ -n "$toplevel" ] && [ "$toplevel" = "$root" ]; then
-      prekHooks="${prekHookDir}"
-    elif [ -n "$toplevel" ]; then
-      key=$(printf %s "$toplevel" | ${pkgs.coreutils}/bin/sha256sum | ${pkgs.coreutils}/bin/cut -c1-16)
-      prekHooks="$toplevel/.devenv/git-hooks-by-root/$key/prek/hooks"
+    if [ -n "$toplevel" ]; then
+      prekHooks="$toplevel/.devenv/git-hooks/prek/hooks"
     fi
     if [ -n "$prekHooks" ] && [ -x "$prekHooks/$hook" ]; then
       "$prekHooks/$hook" "$@"
