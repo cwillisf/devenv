@@ -1,97 +1,76 @@
+# shellcheck shell=bash
+# Attach a directory to one of the devenv configs next to _shared/. A project's
+# .envrc is one line:
+#
+#   source ~/devenv/_shared/envrc <config> [devenv args...]
+#
+# for example `source ~/devenv/_shared/envrc scratch3 --profile android`.
+#
+# An older .envrc that is a symlink to <config>/envrc still works: with no
+# arguments, the config is the directory that symlink points into.
+
 export DIRENV_WARN_TIMEOUT=20s
+
+_devenv_self="$(readlink -f -- "${BASH_SOURCE[0]}")"
+_devenv_shared="$(dirname -- "$_devenv_self")"
+_devenv_configs="$(dirname -- "$_devenv_shared")"
+watch_file "$_devenv_self"
+
+if _devenv_link="$(readlink -- "${BASH_SOURCE[0]}")"; then
+  # Loaded through a .envrc symlink. direnv passes the .envrc path as $1 here,
+  # so it isn't a config name.
+  _devenv_config="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && cd -- "$(dirname -- "$_devenv_link")" && pwd)"
+  set --
+elif (($#)); then
+  _devenv_config="$_devenv_configs/$1"
+  shift
+else
+  log_error "usage: source $_devenv_self <config> [devenv args...]"
+  return 1
+fi
+
+if [[ ! -f "$_devenv_config/devenv.yaml" ]]; then
+  log_error "no devenv.yaml in $_devenv_config"
+  return 1
+fi
 
 devenv_args=()
 
-devenv_project_dir="$(pwd)"
-
-watch_file "${devenv_project_dir}/.nvmrc"
-if [[ -r "${devenv_project_dir}/.nvmrc" ]]; then
-  devenv_args+=("--option" "devenv-override.node-major:string" "$(sed -E 's/v?([0-9]+).*/\1/' < "$devenv_project_dir/.nvmrc")")
+watch_file .nvmrc
+if [[ -r .nvmrc ]]; then
+  devenv_args+=(--option devenv-override.node-major:string "$(sed -E 's/v?([0-9]+).*/\1/' < .nvmrc)")
 fi
 
-# Find the config-specific dir by following the project .envrc symlink exactly
-# one level. This is robust against the case where devenv.yaml is already
-# symlinked into the project dir (which would fool a devenv.yaml-existence check).
-if _envrc_target="$(readlink -- "${BASH_SOURCE[0]}" 2>/dev/null)"; then
-  devenv_config_dir="$(cd -- "$(dirname -- "$_envrc_target")" &> /dev/null && pwd)"
-else
-  devenv_config_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
-fi
-unset _envrc_target
+if [[ "$(pwd -P)" != "$(cd -- "$_devenv_config" && pwd -P)" ]]; then
+  devenv_args+=(--from "path:$_devenv_config")
 
-if [[ ! -f "$devenv_config_dir/devenv.yaml" ]]; then
-  echo "devenv.yaml not found in $devenv_config_dir"
-  false
-fi
-
-if [[ "$devenv_project_dir" != "$devenv_config_dir" ]]; then
-  # Symlink config files into the project dir so devenv runs from here.
-  # This ensures all CWD-sensitive operations (enterShell scripts, git hooks,
-  # DEVENV_ROOT, etc.) use the project dir rather than the config dir.
-  for f in devenv.yaml devenv.nix; do
-    [[ -e "$devenv_config_dir/$f" ]] || continue
-    if [[ "$(readlink -- "$f" 2>/dev/null)" != "$devenv_config_dir/$f" ]]; then
-      ln -sfn "$devenv_config_dir/$f" "$f"
+  # Undo the older symlink-based attachment. Under --from, a devenv.yaml here
+  # would load on top of the config's own and import everything twice.
+  for _devenv_f in devenv.yaml devenv.nix .devenv; do
+    if [[ -L "$_devenv_f" && "$(readlink -- "$_devenv_f")" == "$_devenv_configs"/* ]]; then
+      rm -- "$_devenv_f"
     fi
   done
 
-  # Resolve all symlinks to find the real envrc, which lives in _shared/ —
-  # exactly the directory the 'shared' input should point to.
-  shared_dir="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
-
-  # Copy devenv.lock rather than symlinking it. devenv overwrites the lock with
-  # machine-specific absolute paths when the 'shared' input is resolved via
-  # --override-input below; a copy keeps the config dir's lock clean with
-  # relative paths. The copy is refreshed whenever the config dir's lock is
-  # newer (i.e. after a `devenv update` run from the config dir).
-  #
-  # Substitute the absolute path for the 'shared' input so Nix resolves it
-  # correctly from the project dir on subsequent activations (when devenv's
-  # 'Updating inputs' step runs before --override-input can intercept it).
-  if [[ ! -f "devenv.lock" ]] || [[ "$devenv_config_dir/devenv.lock" -nt "devenv.lock" ]]; then
-    if command -v jq &>/dev/null && jq -e '.nodes.shared' "$devenv_config_dir/devenv.lock" &>/dev/null; then
-      jq --arg p "$shared_dir" \
-        '.nodes.shared.locked.path = $p | .nodes.shared.original.path = $p' \
-        "$devenv_config_dir/devenv.lock" > devenv.lock
-    else
-      cp "$devenv_config_dir/devenv.lock" devenv.lock
-    fi
-  fi
-
-  # Override the 'shared' input with an absolute path so Nix doesn't try to
-  # resolve the relative path: URL in devenv.yaml from the project dir.
-  devenv_args+=("--override-input" "shared" "path:$shared_dir")
-
-  # Share .devenv/ with the config dir so multiple projects using the same
-  # config share the Nix profile and avoid redundant builds.
-  # Ensure the target exists first so the symlink is never broken.
-  mkdir -p "$devenv_config_dir/.devenv"
-  if [[ -d ".devenv" && ! -L ".devenv" ]]; then
-    echo "error: .devenv exists as a real directory in $devenv_project_dir" \
-         "(expected a symlink to $devenv_config_dir/.devenv)." \
-         "Remove it and re-enter the shell."
-    false
-  fi
-  if [[ "$(readlink -- ".devenv" 2>/dev/null)" != "$devenv_config_dir/.devenv" ]]; then
-    ln -sfn "$devenv_config_dir/.devenv" .devenv
+  # Under --from, devenv resolves this directory's own pins rather than using
+  # the config's devenv.lock, so copy the config's lock whenever it changes.
+  watch_file "$_devenv_config/devenv.lock"
+  if [[ ! -f devenv.lock || "$_devenv_config/devenv.lock" -nt devenv.lock ]]; then
+    cp -- "$_devenv_config/devenv.lock" devenv.lock
   fi
 fi
 
-# Remove broken symlinks at the top of this directory whose target is in
-# /nix/store. These are devenv-generated files (.mcp.json, .lsp.json, etc.)
-# whose target derivation has been garbage-collected; `use devenv` below
-# regenerates them. The /nix/store filter ensures we never touch a broken
-# symlink the user created intentionally.
-shopt -s nullglob dotglob
-for f in *; do
-  [[ -L "$f" && ! -e "$f" ]] || continue
-  _target=$(readlink -- "$f")
-  if [[ "$_target" == /nix/store/* ]]; then
-    echo "envrc: removing broken symlink $f -> $_target (GC'd; will be regenerated)"
-    rm -- "$f"
+# Remove devenv-generated symlinks (.pre-commit-config.yaml,
+# .claude/settings.json, ...) whose store path was garbage-collected; devenv
+# regenerates them. Only links into /nix/store are touched.
+for _devenv_f in .[!.]* * .claude/*; do
+  if [[ -L "$_devenv_f" && ! -e "$_devenv_f" && "$(readlink -- "$_devenv_f")" == /nix/store/* ]]; then
+    log_status "removing dead link $_devenv_f (garbage-collected; will be regenerated)"
+    rm -- "$_devenv_f"
   fi
 done
-unset _target
+
+unset _devenv_self _devenv_shared _devenv_configs _devenv_config _devenv_link _devenv_f
 
 eval "$(devenv direnvrc)"
-use devenv "${devenv_args[@]}"
+use devenv "${devenv_args[@]}" "$@"
