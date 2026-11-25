@@ -16,6 +16,10 @@ Then run `direnv allow`. Anything after the config name is passed to devenv. Und
 `devenv --from path:<config>`, so the project needs no `devenv.yaml` or `devenv.nix` of its own and keeps its own
 `.devenv/`. If the project has an `.nvmrc`, its major version picks the Node.js package.
 
+A repo without its own `.envrc` (e.g. a checkout nested under `~/scratch`) gets the parent's environment. If that
+repo's `.nvmrc` wants a different Node, `node`, `npm` and `npx` refuse to run and print the line to add. Set
+`DEVENV_IGNORE_NVMRC=1` to run them anyway.
+
 | Config | What it's for | Profiles |
 | --- | --- | --- |
 | `scratch3` | Scratch web projects | `android`: Android SDK, emulator, Android Studio |
