@@ -83,7 +83,6 @@ in
   # Configs enable treefmt and pick formatters; these apply to all of them.
   treefmt.config.programs.yamlfmt.settings.formatter = {
     retain_line_breaks_single = true;
-    max_line_length = 118;
     eof_newline = true;
   };
   git-hooks.hooks.treefmt.enable = lib.mkDefault config.treefmt.enable;
@@ -159,9 +158,7 @@ in
     markdownlint = {
       enable = true;
       settings.configuration = {
-        "MD013" = {
-          "line_length" = 118;
-        };
+        "MD013" = false;
       };
     };
     mixed-line-endings.enable = true;
@@ -193,7 +190,6 @@ in
               min-spaces-from-content: 1 # allow Renovate's version tags
             document-start: disable
             line-length:
-              max: 118
               level: warning
             truthy: disable # false positives with GHA
         '';

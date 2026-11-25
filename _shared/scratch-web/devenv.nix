@@ -14,7 +14,6 @@
       #   settings = {
       #     editorconfig = true;
       #     embeddedLanguageFormatting = "auto";
-      #     printWidth = 118;
       #     quoteProps = "consistent";
       #   };
       # };
