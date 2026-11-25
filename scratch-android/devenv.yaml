@@ -18,7 +18,7 @@ inputs:
         follows: nixpkgs
 
 # If you're using non-OSS software, you can set allowUnfree to true.
-allowUnfree: true # Android SDK, sauce-connect
+allowUnfree: true # Android SDK, sauce-connect, vscode (shared/common)
 
 imports:
   - shared/common

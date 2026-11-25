@@ -26,7 +26,8 @@ _: {
   };
 
   git-hooks.hooks = {
-    cargo-check.enable = true;
+    # clippy runs a full `cargo check` itself, so a separate cargo-check hook
+    # would only compile everything twice.
     check-toml.enable = true;
     clippy.enable = true;
   };

@@ -1,1 +1,24 @@
-../rust/devenv.yaml
+# yaml-language-server: $schema=https://devenv.sh/devenv.schema.json
+inputs:
+  nixpkgs:
+    url: github:NixOS/nixpkgs/nixpkgs-unstable
+  git-hooks:
+    url: github:cachix/git-hooks.nix
+    inputs:
+      nixpkgs:
+        follows: nixpkgs
+  shared:
+    url: path:../_shared/
+    flake: false
+  treefmt-nix:
+    url: github:numtide/treefmt-nix
+    inputs:
+      nixpkgs:
+        follows: nixpkgs
+
+allowUnfree: true # vscode (shared/common)
+
+imports:
+  - shared/common
+  - shared/rust
+  - shared/bevy
