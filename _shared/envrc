@@ -5,9 +5,6 @@
 #   source ~/devenv/_shared/envrc <config> [devenv args...]
 #
 # for example `source ~/devenv/_shared/envrc scratch3 --profile android`.
-#
-# An older .envrc that is a symlink to <config>/envrc still works: with no
-# arguments, the config is the directory that symlink points into.
 
 export DIRENV_WARN_TIMEOUT=20s
 
@@ -16,12 +13,7 @@ _devenv_shared="$(dirname -- "$_devenv_self")"
 _devenv_configs="$(dirname -- "$_devenv_shared")"
 watch_file "$_devenv_self"
 
-if _devenv_link="$(readlink -- "${BASH_SOURCE[0]}")"; then
-  # Loaded through a .envrc symlink. direnv passes the .envrc path as $1 here,
-  # so it isn't a config name.
-  _devenv_config="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && cd -- "$(dirname -- "$_devenv_link")" && pwd)"
-  set --
-elif (($#)); then
+if (($#)); then
   _devenv_config="$_devenv_configs/$1"
   shift
 else
@@ -44,8 +36,9 @@ fi
 if [[ "$(pwd -P)" != "$(cd -- "$_devenv_config" && pwd -P)" ]]; then
   devenv_args+=(--from "path:$_devenv_config")
 
-  # Undo the older symlink-based attachment. Under --from, a devenv.yaml here
-  # would load on top of the config's own and import everything twice.
+  # Undo the older symlink-based attachment, in case a checkout still has it.
+  # Under --from, a devenv.yaml here would load on top of the config's own and
+  # import everything twice, with no error to point at the cause.
   for _devenv_f in devenv.yaml devenv.nix .devenv; do
     if [[ -L "$_devenv_f" && "$(readlink -- "$_devenv_f")" == "$_devenv_configs"/* ]]; then
       rm -- "$_devenv_f"
@@ -70,7 +63,7 @@ for _devenv_f in .[!.]* * .claude/*; do
   fi
 done
 
-unset _devenv_self _devenv_shared _devenv_configs _devenv_config _devenv_link _devenv_f
+unset _devenv_self _devenv_shared _devenv_configs _devenv_config _devenv_f
 
 eval "$(devenv direnvrc)"
 use devenv "${devenv_args[@]}" "$@"
