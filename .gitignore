@@ -5,6 +5,9 @@ devenv.local.nix
 # direnv
 .direnv
 
+# Android (written by devenv's android module)
+local.properties
+
 # pre-commit
 .pre-commit-config.yaml
 

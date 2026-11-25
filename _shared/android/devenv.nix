@@ -1,5 +1,4 @@
 {
-  config,
   pkgs,
   lib,
   ...
@@ -81,12 +80,14 @@ in
     android-studio.enable = true;
   };
 
-  # Override devenv's default of $(pwd)/.android so that Android user data
-  # (AVDs, caches) doesn't pollute the project directory.
-  # Using enterShell because the android module sets ANDROID_USER_HOME
-  # in a shell hook that runs after env vars are exported.
-  enterShell = ''
-    export ANDROID_USER_HOME="${config.devenv.dotfile}/.android"
+  # Override devenv's default of $(pwd)/.android with Android's own default, so
+  # every project and an Android Studio started outside devenv share one set of
+  # AVDs and adb keys. Using enterShell because the android module sets
+  # ANDROID_USER_HOME in a shell hook that runs after env vars are exported.
+  # mkAfter keeps this after that hook even when this module is imported from a
+  # profile, which otherwise puts it first.
+  enterShell = lib.mkAfter ''
+    export ANDROID_USER_HOME="$HOME/.android"
     export ANDROID_AVD_HOME="$ANDROID_USER_HOME/avd"
     mkdir -p "$ANDROID_USER_HOME" "$ANDROID_AVD_HOME"
 

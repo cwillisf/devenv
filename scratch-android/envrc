@@ -1,0 +1,5 @@
+# scratch-android is now scratch3 with the android profile. This keeps older
+# .envrc symlinks that point here working until they're replaced with
+# `source ~/devenv/_shared/envrc scratch3 --profile android`.
+# shellcheck shell=bash source=/dev/null
+source "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")/../_shared/envrc" scratch3 --profile android

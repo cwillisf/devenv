@@ -5,6 +5,16 @@ success=()
 failed=()
 logdir="$(mktemp -d -t update-all.XXXXXX)"
 
+# Build each profile the config defines (hostname and user are devenv's own
+# groups for automatic profiles, not profile names).
+build_profiles() {
+  local profiles p
+  profiles="$(devenv eval profiles | jq -r '.profiles | keys[] | select(. != "hostname" and . != "user")')"
+  for p in $profiles; do
+    devenv --profile "$p" shell -- true || return 1
+  done
+}
+
 for dir in */; do
   dir="${dir%/}"
   lockfile="$dir/devenv.lock"
@@ -15,7 +25,7 @@ for dir in */; do
 
   # Build the shell after updating so a broken update never gets committed.
   # A failed env keeps its last committed lockfile until upstream is fixed.
-  if (cd "$dir" && devenv update && devenv shell -- true) > "$log" 2>&1; then
+  if (cd "$dir" && devenv update && devenv shell -- true && build_profiles) > "$log" 2>&1; then
     success+=("$lockfile")
   else
     echo "    failed; reverting $lockfile (log: $log)"

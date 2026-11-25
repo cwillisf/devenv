@@ -18,7 +18,7 @@ inputs:
         follows: nixpkgs
 
 # If you're using non-OSS software, you can set allowUnfree to true.
-allowUnfree: true # sauce-connect, vscode (shared/common)
+allowUnfree: true # Android SDK (android profile), sauce-connect, vscode (shared/common)
 
 # If you're willing to use a package that's vulnerable
 # permittedInsecurePackages:
