@@ -1,12 +1,12 @@
 {
   lib,
   pkgs,
-  inputs,
   ...
 }:
-let
-  treefmt = import "${inputs.shared}/treefmt.nix" { inherit pkgs inputs; } {
-    programs = {
+{
+  treefmt = {
+    enable = true;
+    config.programs = {
       # as of 2025-08-15, Prettier supports:
       # JS/JSX/TS, Angular, Vue, Flow, CSS/Less/SCSS, HTML, Ember/Handlebars, JSON, GraphQL, Markdown, and YAML
       # prettier = {
@@ -18,19 +18,10 @@ let
       #     quoteProps = "consistent";
       #   };
       # };
-      yamlfmt = {
-        enable = true;
-        settings = {
-          formatter = {
-            retain_line_breaks_single = true;
-            max_line_length = 118;
-            eof_newline = true;
-          };
-        };
-      };
+      yamlfmt.enable = true;
     };
 
-    settings.formatter = {
+    config.settings.formatter = {
       # treefmt-nix doesn't support settings for actionlint, so this hooks up actionlint as a custom formatter
       "actionlint" = {
         command = lib.getExe pkgs.actionlint;
@@ -51,8 +42,7 @@ let
       };
     };
   };
-in
-{
+
   # actionlint is a custom formatter (not a programs.* entry), so expose it explicitly.
   packages = [
     pkgs.actionlint
@@ -67,8 +57,7 @@ in
     pkgs.pango
     pkgs.pixman
     pkgs.pkg-config
-  ]
-  ++ treefmt.packages;
+  ];
 
   env = {
     LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
@@ -79,11 +68,4 @@ in
   };
 
   dotenv.enable = true;
-
-  git-hooks.hooks = {
-    treefmt = {
-      enable = true;
-      package = treefmt.wrapper;
-    };
-  };
 }

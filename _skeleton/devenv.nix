@@ -1,7 +1,11 @@
-{ pkgs, inputs, ... }:
-let
-  treefmt = import "${inputs.shared}/treefmt.nix" { inherit pkgs inputs; } {
-    programs = {
+_: {
+  # languages.rust.enable = true;
+
+  # _shared/common keeps treefmt off shell entry, enables its git hook, and puts
+  # every formatter enabled here on PATH. Prune the `programs` list to taste.
+  treefmt = {
+    enable = true;
+    config.programs = {
       actionlint.enable = true; # GitHub Actions
       alejandra.enable = true; # "The Uncompromising Nix Code Formatter"
       asmfmt.enable = true; # Assembly
@@ -101,13 +105,6 @@ let
       zprint.enable = true; # Zprint for Clojure
     };
   };
-in
-{
-  # languages.rust.enable = true;
-
-  # The treefmt wrapper plus every formatter enabled above, so editors/IDEs (and
-  # the CLI) find the same tools the hook uses. Prune the `programs` list to taste.
-  inherit (treefmt) packages;
 
   git-hooks.hooks = {
     actionlint.enable = true; # Static checker for GitHub Actions workflow files
@@ -271,11 +268,5 @@ in
     yamlfmt.enable = true; # Formatter for YAML files.
     yamllint.enable = true; # Linter for YAML files.
     zprint.enable = true; # Beautifully format Clojure and Clojurescript source code and s-expressions.
-
-    # One CLI to format the code tree.
-    treefmt = {
-      enable = true;
-      package = treefmt.wrapper;
-    };
   };
 }

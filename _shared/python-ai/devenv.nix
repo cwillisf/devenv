@@ -1,25 +1,9 @@
 {
   pkgs,
-  inputs,
   lib,
   ...
 }:
 let
-  treefmt = import "${inputs.shared}/treefmt.nix" { inherit pkgs inputs; } {
-    programs = {
-      actionlint.enable = true;
-      yamlfmt = {
-        enable = true;
-        settings = {
-          formatter = {
-            retain_line_breaks_single = true;
-            max_line_length = 118;
-            eof_newline = true;
-          };
-        };
-      };
-    };
-  };
   python-libs = with pkgs; [
     cudaPackages.cudnn
     cudaPackages.cuda_cudart
@@ -51,12 +35,13 @@ in
     ];
   };
 
-  packages = python-libs ++ treefmt.packages;
+  packages = python-libs;
 
-  git-hooks.hooks = {
-    treefmt = {
-      enable = true;
-      package = treefmt.wrapper;
+  treefmt = {
+    enable = true;
+    config.programs = {
+      actionlint.enable = true;
+      yamlfmt.enable = true;
     };
   };
 }

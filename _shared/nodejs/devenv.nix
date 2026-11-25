@@ -20,12 +20,5 @@
             lib.optionalString (config.devenv-override.node-major != "") "_${config.devenv-override.node-major}"
           }";
     };
-
-    git-hooks.hooks = {
-      check-json = {
-        enable = true;
-        excludes = [ "tsconfig.*\\.json$" ];
-      };
-    };
   };
 }
